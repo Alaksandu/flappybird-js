@@ -15,6 +15,8 @@ const flappyBird = {
   altura: 24,
   x: 10,
   y: 50,
+  gravidade: 0.25,
+  velocidade: 0,
   desenha() {
     contexto.drawImage(
     // pra que essa função de desenhar possa fazer sprite ficar visivel
@@ -25,6 +27,11 @@ const flappyBird = {
     flappyBird.x, flappyBird.y, // posição do sprite na tela
     flappyBird.largura, flappyBird.altura // tamanho a ser usado
     );
+  },
+
+  atualiza() {
+    flappyBird.velocidade = flappyBird.velocidade + flappyBird.gravidade
+    flappyBird.y = flappyBird.y + flappyBird.velocidade
   }
 }
 
@@ -86,16 +93,70 @@ const fundo = {
 
 }
 
+// Tela de Inicio
+
+const msgGameReady = {
+  spriteX: 134,
+  spriteY: 0,
+  largura: 175,
+  altura: 152,
+  x: 73,
+  y: 50,
+  desenha() {
+    contexto.drawImage(
+      sprites,
+      msgGameReady.spriteX, msgGameReady.spriteY,
+      msgGameReady.largura, msgGameReady.altura,
+      msgGameReady.x, msgGameReady.y,
+      msgGameReady.largura, msgGameReady.altura
+    )
+  }
+}
+
+let telaAtiva = {}
+function mudaParaTela(novaTela) {
+  telaAtiva = novaTela
+}
+const telas = {
+  INICIO: {
+    desenha() {
+      fundo.desenho(),
+      chao.desenha(),
+      flappyBird.desenha()
+      msgGameReady.desenha()
+    },
+    click(){
+      mudaParaTela(telas.JOGO)
+    },
+    atualiza() {
+
+    } 
+  },
+  JOGO: {
+    desenha() {
+      fundo.desenho(),
+      chao.desenha(),
+      flappyBird.desenha()
+    },
+    atualiza() {
+      flappyBird.atualiza()
+    }
+  }
+}
 
 //Loop
-function loop() {
-    fundo.desenho()
-    chao.desenha()
-    flappyBird.desenha()
+function loop() { 
 
+    telaAtiva.desenha(),
+    telaAtiva.atualiza()
     requestAnimationFrame(loop);
 }
 
+window.addEventListener('click', function(){
+  telaAtiva.click()
+})
+
+mudaParaTela(telas.INICIO);
 loop();
 
 
